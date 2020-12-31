@@ -1,0 +1,30 @@
+.page__title {
+  display: block !important;
+  text-align: center;
+  font-size: 3rem;
+  margin-top: 15px;
+}
+
+.container__form {
+  width: 450px;
+  margin: auto;
+}
+
+.submit__button {
+  margin-left: 0 !important;
+}
+
+input[type="file"] {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.post__image {
+  display: inline-block;
+  justify-content: center;
+}
+
+#post__empty {
+  margin-top: 50px !important;
+}
