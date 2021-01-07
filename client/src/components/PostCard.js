@@ -10,7 +10,16 @@ import DeleteButton from "./DeleteButton";
 import MyPopup from "../util/MyPopup";
 
 function PostCard({
-  post: { body, createdAt, id, username, likeCount, commentCount, likes },
+  post: {
+    body,
+    createdAt,
+    id,
+    username,
+    likeCount,
+    commentCount,
+    likes,
+    image,
+  },
 }) {
   const { user } = useContext(AuthContext);
 
@@ -28,6 +37,19 @@ function PostCard({
         </Card.Meta>
         <Card.Description>{body}</Card.Description>
       </Card.Content>
+      <span>
+        {image ? (
+          <Image
+            centered
+            src={image.url}
+            wrapped
+            size="medium"
+            alt={image.public_id}
+          />
+        ) : (
+          <Image src="" hidden />
+        )}
+      </span>
       <Card.Content extra>
         <LikeButton user={user} post={{ id, likes, likeCount }} />
         <MyPopup content="Comment on post">

@@ -1,16 +1,20 @@
-import React from "react";
-import { Form, Button, Segment } from "semantic-ui-react";
+import React, { useContext } from "react";
+import { Form, Button, Segment, Icon } from "semantic-ui-react";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/react-hooks";
+import Resizer from "react-image-file-resizer";
+import axios from "axios";
+import { AuthContext } from "../context/auth";
 
 import { useForm } from "../util/hooks";
 import { FETCH_POSTS_QUERY } from "../util/graphql";
 
 function PostForm() {
+  const { user } = useContext(AuthContext);
   const { values, onChange, onSubmit } = useForm(createPostCallBack, {
     body: "",
+    image: "",
   });
-
   const [createPost, { error }] = useMutation(CREATE_POST_MUTATION, {
     variables: values,
     update(proxy, result) {
@@ -25,6 +29,7 @@ function PostForm() {
         },
       });
       values.body = "";
+      values.image = "";
     },
     onError(err) {
       return err;
@@ -35,8 +40,42 @@ function PostForm() {
     createPost();
   }
 
-  function imageUpload() {
-    console.log("Image Uploaded");
+  function ImageUpload(e) {
+    let fileInput = false;
+    if (e.target.files[0]) {
+      fileInput = true;
+    }
+    if (fileInput) {
+      Resizer.imageFileResizer(
+        e.target.files[0],
+        500,
+        500,
+        "JPEG",
+        100,
+        0,
+        (uri) => {
+          // console.log(uri);
+          axios
+            .post(
+              `http://localhost:5000/uploadimages`,
+              { image: uri },
+              {
+                headers: {
+                  user,
+                },
+              }
+            )
+            .then((res) => {
+              console.log("Cloudinary upload", res);
+              createPostCallBack({ ...values, image: [res.data] });
+            })
+            .catch((error) => {
+              console.log("Cloudinary Upload Failed", error);
+            });
+        },
+        "base64"
+      );
+    }
   }
 
   return (
@@ -52,8 +91,16 @@ function PostForm() {
               value={values.body}
               error={error ? true : false}
             />
-            <input type="file" accept="image/*" onChange={imageUpload} />
-
+            <label>
+              <Icon name="folder open outline" size="large"></Icon>
+              <input
+                hidden
+                type="file"
+                accept="image/*"
+                value={values.image}
+                onChange={ImageUpload}
+              />
+            </label>
             <Button
               type="submit"
               size="large"
@@ -89,6 +136,10 @@ const CREATE_POST_MUTATION = gql`
       body
       createdAt
       username
+      image {
+        url
+        public_id
+      }
       likes {
         id
         username

@@ -17,6 +17,15 @@ const postSchema = new Schema({
       createdAt: String,
     },
   ],
+  image: {
+    type: Array,
+    default: [
+      {
+        url: "https://via.placeholder.com/200x200.png?text=Profile",
+        public_id: Date.now,
+      },
+    ],
+  },
   user: {
     type: Schema.Types.ObjectId,
     ref: "users",

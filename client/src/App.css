@@ -27,4 +27,5 @@ input[type="file"] {
 
 #post__empty {
   margin-top: 50px !important;
+  padding: 5px !important;
 }

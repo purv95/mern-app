@@ -2,6 +2,7 @@ const { AuthenticationError, UserInputError } = require("apollo-server");
 
 const Post = require("../../models/Post");
 const checkAuth = require("../../util/check-auth");
+// const fs = require("fs");
 
 module.exports = {
   Query: {
@@ -27,18 +28,24 @@ module.exports = {
     },
   },
   Mutation: {
-    async createPost(_, { body }, context) {
+    async createPost(_, { body, image }, context) {
       const user = checkAuth(context);
 
       if (body.trim() === "") {
         throw new Error("Post cannot be empty");
       }
 
+      // let writeStream = fs.createWriteStream("image.jpg");
+      // const { filename, createReadStream } = await image;
+      // createReadStream().pipe(writeStream);
+      // console.log(filename);
+
       const newPost = new Post({
         body,
         user: user.id,
         username: user.username,
         createdAt: new Date().toISOString(),
+        image,
       });
 
       const post = await newPost.save();
